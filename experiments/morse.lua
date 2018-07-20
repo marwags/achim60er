@@ -3,7 +3,7 @@ ws2812.init()
 i, j, buffer = 0, 0, ws2812.newBuffer(10, 3);
 buffer:fill( 0, 0, 0); 
 
-slf = 2; -- erste Straßenlaterne
+slf = 1; -- erste Straßenlaterne
 sl1 = slf;
 sl2 = slf + 1;
 sl3 = slf + 2;
@@ -44,7 +44,7 @@ xyz = function()
 end
 
 singleChar = function()
-    print(charBuffer)
+    --print(charBuffer)
     if string.len(charBuffer) > 0 then
         local c = string.sub(charBuffer,1,1);
         charBuffer = string.sub(charBuffer, 2)
@@ -61,6 +61,7 @@ singleChar = function()
     else
         buffer:set(sld, 0, 0, 0)
         tmr.create():alarm( dah, tmr.ALARM_SINGLE, abc);
+--[[
         tmr.create():alarm( 50, tmr.ALARM_SINGLE, function()
             buffer:set(sld, 30, 0, 0)
             ws2812.write(buffer)
@@ -69,12 +70,13 @@ singleChar = function()
                 ws2812.write(buffer)
             end);
         end);
+--]]
     end
     ws2812.write(buffer)
 end
 
 abc = function()
-    print("abc")
+    --print("abc")
     local char = text:read(1);
     if char == nil then
         text:close();
