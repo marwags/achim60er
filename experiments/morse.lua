@@ -15,7 +15,7 @@ dit = 200; -- ms für ein dit
 dah = dit * 3;
 
 textfile = "morse.txt";
-text=file.open( textfile, "r");
+--text=file.open( textfile, "r");
 charBuffer = "";
 
 -- Straßenlaternen
@@ -39,6 +39,7 @@ xyz = function()
     tmr.create():alarm( 10000, tmr.ALARM_SINGLE, function()
         buffer:set(sld, 0, 0, 0)
         ws2812.write(buffer)
+        text=file.open( textfile, "r");
         tmr.create():alarm( 1000, tmr.ALARM_SINGLE, abc);
     end)
 end
@@ -80,7 +81,6 @@ abc = function()
     local char = text:read(1);
     if char == nil then
         text:close();
-        text=file.open( textfile, "r");
         buffer:set(sld, 0, 0, 0)
         ws2812.write(buffer)
         tmr.create():alarm( 1000, tmr.ALARM_SINGLE, xyz);
