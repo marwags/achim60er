@@ -1,3 +1,5 @@
+coder = require("coder")
+
 ws2812.init()
 
 i, j, buffer = 0, 0, ws2812.newBuffer(10, 3);
@@ -15,6 +17,8 @@ dit = 200; -- ms für ein dit
 dah = dit * 3;
 
 textfile = "morse.txt";
+refrain  = "refrain.txt";
+alter = 0;
 --text=file.open( textfile, "r");
 charBuffer = "";
 
@@ -27,19 +31,42 @@ buffer:set(sl4, slhk, slhk, slhk);
 buffer:set(sld, 0, 0, 0)
 ws2812.write(buffer)
 
+shot = function( color )
+    if color == "red" then
+        buffer:set(sld, 0, 100, 0)
+    elseif color == "green" then
+        buffer:set(sld, 100, 0, 0)
+    elseif color == "blue" then
+        buffer:set(sld, 0, 0, 100)
+    else
+        buffer:set(sld, 100, 100, 100)
+    end
+    ws2812.write(buffer)
+    tmr.create():alarm( 10, tmr.ALARM_SINGLE, function()
+        buffer:set(sld, 0, 0, 0)
+        ws2812.write(buffer)
+    end);
+end
+
 abc = function()
     buffer:set(sld, 0, 100, 0)
     ws2812.write(buffer)
 end
 
 xyz = function()
-    print("xyz")
+    --print("xyz")
     buffer:set(sld, slhk, slhk, slhk)
     ws2812.write(buffer)
     tmr.create():alarm( 10000, tmr.ALARM_SINGLE, function()
         buffer:set(sld, 0, 0, 0)
         ws2812.write(buffer)
-        text=file.open( textfile, "r");
+        alter = (alter + 1) % 2
+        if alter == 0 then
+            text=file.open( textfile, "r");
+            shot("red")
+        else
+            text=file.open( refrain, "r");
+        end
         tmr.create():alarm( 1000, tmr.ALARM_SINGLE, abc);
     end)
 end
@@ -81,71 +108,16 @@ abc = function()
     local char = text:read(1);
     if char == nil then
         text:close();
+        if alter == 0 then
+            shot("green")
+        end
         buffer:set(sld, 0, 0, 0)
         ws2812.write(buffer)
         tmr.create():alarm( 1000, tmr.ALARM_SINGLE, xyz);
         return;
     end
-    print(char)
-    if char == "a" then
-        charBuffer = "102"
-    elseif char == "b" then
-        charBuffer = "2010101"
-    elseif char == "c" then
-        charBuffer = "2010201"
-    elseif char == "d" then
-        charBuffer = "20101"
-    elseif char == "e" then
-        charBuffer = "1"
-    elseif char == "f" then
-        charBuffer = "1010201"
-    elseif char == "g" then
-        charBuffer = "20201"
-    elseif char == "h" then
-        charBuffer = "1010101"
-    elseif char == "i" then
-        charBuffer = "101"
-    elseif char == "j" then
-        charBuffer = "1020202"
-    elseif char == "k" then
-        charBuffer = "20102"
-    elseif char == "l" then
-        charBuffer = "1020101"
-    elseif char == "m" then
-        charBuffer = "202"
-    elseif char == "n" then
-        charBuffer = "201"
-    elseif char == "o" then
-        charBuffer = "20202"
-    elseif char == "p" then
-        charBuffer = "1020201"
-    elseif char == "q" then
-        charBuffer = "2020102"
-    elseif char == "r" then
-        charBuffer = "10201"
-    elseif char == "s" then
-        charBuffer = "10101"
-    elseif char == "t" then
-        charBuffer = "2"
-    elseif char == "u" then
-        charBuffer = "10102"
-    elseif char == "v" then
-        charBuffer = "1010102"
-    elseif char == "w" then
-        charBuffer = "10202"
-    elseif char == "x" then
-        charBuffer = "2010102"
-    elseif char == "y" then
-        charBuffer = "2010202"
-    elseif char == "z" then
-        charBuffer = "2020101"
-    elseif char == " " then
-        charBuffer = "000000"
-    else
-        charBuffer = "101010101"
-    end
+    charBuffer = coder.encode( char )
     tmr.create():alarm( dit, tmr.ALARM_SINGLE, singleChar)
 end
 
 tmr.create():alarm( 300, tmr.ALARM_SINGLE, xyz);
-
