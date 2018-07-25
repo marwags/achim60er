@@ -2,7 +2,7 @@ coder = require("coder")
 
 ws2812.init()
 
-i, j, buffer = 0, 0, ws2812.newBuffer(10, 3);
+buffer = ws2812.newBuffer(10, 3);
 buffer:fill( 0, 0, 0); 
 
 slf = 1; -- erste Straßenlaterne
@@ -19,7 +19,6 @@ dah = dit * 3;
 textfile = "morse.txt";
 refrain  = "refrain.txt";
 alter = 0;
---text=file.open( textfile, "r");
 charBuffer = "";
 
 -- Straßenlaternen
