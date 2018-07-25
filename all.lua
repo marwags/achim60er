@@ -1,6 +1,6 @@
 ws2812.init();
 
-feuertonne = 1;
+fireTon = 1;
 hauslicht = 6;
 
 slf = 2; -- erste Straßenlaterne
@@ -19,7 +19,7 @@ buffer:set(hauslicht, 70, 200, 10);
 tmr.create():alarm(150, tmr.ALARM_AUTO, function()
   i = (i + 70) % 120
   j = (j + 12) % 40
-  buffer:set(feuertonne, j + 10, i + 100, 5)
+  buffer:set(fireTon, j + 10, i + 100, 5)
   ws2812.write(buffer)
 end)
 
