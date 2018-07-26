@@ -1,4 +1,5 @@
 textfile = "morse.txt";
+originalfile = "original.txt";
 
 wifi.setmode(wifi.STATION)
 --wifi.sta.config("Achim","60.Geburtstag")
@@ -21,27 +22,42 @@ srv:listen(80, function(conn)
     if _GET.mtext == nil then
         _GET.mtext = ""
     end
-local hex_to_char = function(x)
-  return string.char(tonumber(x, 16))
-end
-
-local unescape = function(url)
-  return url:gsub("%%(%x%x)", hex_to_char)
-end
+    local hex_to_char = function(x)
+      return string.char(tonumber(x, 16))
+    end
+    
+    local unescape = function(url)
+      return url:gsub("%%(%x%x)", hex_to_char)
+    end
     local mtext = string.lower(string.gsub(unescape(_GET.mtext), "+", " "))
-    buf = buf .. "<!DOCTYPE html><html><body><h1>Hello, this is NodeMCU.</h1><form src=\"/\"> "
-    print(_GET.mtext)
-    print(mtext)
+    if mtext == nil or mtext == "" then
+        local mf = file.open( textfile, "r")
+        if mf then
+            mtext = mf:read()
+            mf:close()
+            mf = nil
+        else
+            mtext = ""
+        end
+    end
+    buf = buf .. "<!DOCTYPE html><html><body><h1>Gl&uuml;ckwunsch zum 60., Achim.</h1><form src=\"/\"> "
+    buf = buf .. "<label for=\"mtext\">Morsetext: <input id=\"mtext\" name=\"mtext\" value=\"\"> </label><p/><input type=\"submit\" value=\"senden\" size=\"100\"></form></body></html>"
+    client:send(buf)
 
     mf = file.open( textfile, "w+")
     if mf then
-        mf:write(mtext)
+        if mtext == "reset" then
+            local of = file.open( originalfile, "r");
+            if of then
+                mf:write(of:read());
+            end
+            mtext = ""
+        else
+           mf:write(mtext)
+        end
         mf:close()
         mf = nil
     end
-
-    buf = buf .. "<label for=\"mtext\">Morsetext: <input id=\"mtext\" name=\"mtext\" value=\"" .. mtext .. "\"> </label><p/><input type=\"submit\" value=\"senden\"></form></body></html>"
-    client:send(buf)
   end)
   conn:on("sent", function(c) c:close() end)
 end)
