@@ -1,15 +1,13 @@
+require("morse")
+
 textfile = "morse.txt";
 originalfile = "original.txt";
 
 wifi.setmode(wifi.STATION)
 --wifi.sta.config("Achim","60.Geburtstag")
 wifi.sta.config({ssid="Achim",pwd="60.Geburtstag"})
-if (wifi.sta.sethostname("Karte") == true) then
-    print("hostname was successfully changed")
-else
-    print("hostname was not changed")
-end
-endprint(wifi.sta.getip())
+wifi.sta.sethostname("Karte")
+print(wifi.sta.getip())
 srv = net.createServer(net.TCP)
 srv:listen(80, function(conn)
   conn:on("receive", function(client, request)
@@ -58,6 +56,8 @@ srv:listen(80, function(conn)
                 mf:write(of:read());
             end
             mtext = ""
+        elseif mtext == "renew" then
+           file.rename( "init.lua", "alt.lua")
         else
            mf:write(mtext)
         end
@@ -67,3 +67,25 @@ srv:listen(80, function(conn)
   end)
   conn:on("sent", function(c) c:close() end)
 end)
+
+ws2812.init();
+
+feuertonne = 1;
+ersteLaterne = 2;
+hauslicht = 7;
+
+i, j, m, buffer = 0, 0, 0, ws2812.newBuffer(10, 3);
+buffer:fill( 0, 0, 0); 
+
+buffer:set(hauslicht, 70, 200, 10);
+
+tmr.create():alarm(150, tmr.ALARM_AUTO, function()
+  i = (i + 70) % 120
+  j = (j + 12) % 40
+  buffer:set(feuertonne, j + 10, i + 100, 5)
+  ws2812.write(buffer)
+end)
+
+morse.init( buffer, ersteLaterne, 50, 200)
+morse.start()
+

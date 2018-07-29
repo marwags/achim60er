@@ -11,7 +11,8 @@ local sl1 = slf;
 local sl2 = slf + 1;
 local sl3 = slf + 2;
 local sl4 = slf + 3;
-local sld = sl3; -- defekte Straßenlaterne
+local sl5 = slf + 4;
+local sld = sl4; -- defekte Straßenlaterne
 local slhk = 20; -- Helligkeit
 
 local dit = 200; -- ms für ein dit
@@ -139,6 +140,7 @@ morse.start = function()
     buffer:set(sl2, slhk, slhk, slhk);
     buffer:set(sl3, slhk, slhk, slhk);
     buffer:set(sl4, slhk, slhk, slhk);
+    buffer:set(sl5, slhk, slhk, slhk);
     buffer:set(sld, 0, 0, 0)
     ws2812.write(buffer)
 

@@ -4,7 +4,7 @@ ws2812.init();
 
 feuertonne = 1;
 ersteLaterne = 2;
-hauslicht = 6;
+hauslicht = 7;
 
 i, j, m, buffer = 0, 0, 0, ws2812.newBuffer(10, 3);
 buffer:fill( 0, 0, 0); 
