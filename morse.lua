@@ -13,7 +13,9 @@ local sl3 = slf + 2;
 local sl4 = slf + 3;
 local sl5 = slf + 4;
 local sld = sl4; -- defekte Straßenlaterne
-local slhk = 20; -- Helligkeit
+local slhk_g = 20; -- Helligkeit
+local slhk_r = 20; -- Helligkeit
+local slhk_b = 20; -- Helligkeit
 
 local dit = 200; -- ms für ein dit
 local dah = dit * 3;
@@ -23,12 +25,20 @@ local refrain  = "refrain.txt";
 local alter = 0;
 local charBuffer = "";
 
-morse.init = function( buf, first, brightness, dit_length ) 
+morse.init = function( buf, first, brightness_g, brightness_r, brightness_b, dit_length ) 
     -- Straßenlaternen
     buffer = buf
 
-    if brightness >= 0 and brightness <= 255 then
-        slhk = brightness;
+    if brightness_g >= 0 and brightness_g <= 255 then
+        slhk_g = brightness_g;
+    end
+
+    if brightness_r >= 0 and brightness_r <= 255 then
+        slhk_r = brightness_r;
+    end
+
+    if brightness_b >= 0 and brightness_b <= 255 then
+        slhk_b = brightness_b;
     end
 
     if first then
@@ -38,7 +48,8 @@ morse.init = function( buf, first, brightness, dit_length )
     sl2 = slf + 1;
     sl3 = slf + 2;
     sl4 = slf + 3;
-    sld = sl3; -- defekte Straßenlaterne
+    sl5 = slf + 4;
+    sld = sl4; -- defekte Straßenlaterne
 
     if dit_length then
         dit = dit_length
@@ -65,7 +76,7 @@ end
 
 morse.xyz = function()
     --print("xyz")
-    buffer:set(sld, slhk, slhk, slhk)
+    buffer:set(sld, slhk_g, slhk_r, slhk_b)
     ws2812.write(buffer)
     tmr.create():alarm( 10000, tmr.ALARM_SINGLE, function()
         buffer:set(sld, 0, 0, 0)
@@ -87,10 +98,10 @@ morse.singleChar = function()
         local c = string.sub(charBuffer,1,1);
         charBuffer = string.sub(charBuffer, 2)
         if c == "1" then
-            buffer:set(sld, slhk, slhk, slhk)
+            buffer:set(sld, slhk_g, slhk_r, slhk_b)
             tmr.create():alarm( dit, tmr.ALARM_SINGLE, morse.singleChar);
         elseif c == "2" then
-            buffer:set(sld, slhk, slhk, slhk)
+            buffer:set(sld, slhk_g, slhk_r, slhk_b)
             tmr.create():alarm( dah, tmr.ALARM_SINGLE, morse.singleChar);
         else
             buffer:set(sld, 0, 0, 0)
@@ -136,11 +147,11 @@ morse.start = function()
         print("Kein buffer initialisiert!")
         return
     end
-    buffer:set(sl1, slhk, slhk, slhk);
-    buffer:set(sl2, slhk, slhk, slhk);
-    buffer:set(sl3, slhk, slhk, slhk);
-    buffer:set(sl4, slhk, slhk, slhk);
-    buffer:set(sl5, slhk, slhk, slhk);
+    buffer:set(sl1, slhk_g, slhk_r, slhk_b);
+    buffer:set(sl2, slhk_g, slhk_r, slhk_b);
+    buffer:set(sl3, slhk_g, slhk_r, slhk_b);
+    buffer:set(sl4, slhk_g, slhk_r, slhk_b);
+    buffer:set(sl5, slhk_g, slhk_r, slhk_b);
     buffer:set(sld, 0, 0, 0)
     ws2812.write(buffer)
 
