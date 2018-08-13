@@ -53,7 +53,13 @@ srv:listen(80, function(conn)
         if mtext == "reset" then
             local of = file.open( originalfile, "r");
             if of then
-                mf:write(of:read());
+              local line
+              repeat
+                line = of:read(100)
+                if line then
+                  mf:write(line)
+                end
+              until line == nil
             end
             mtext = ""
         elseif mtext == "renew" then
