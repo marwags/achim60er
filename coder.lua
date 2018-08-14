@@ -4,7 +4,7 @@ coder.encode = function( char )
 
 local charBuffer = ""
 
-    print(char)
+--    print(char)
     if char == "a" then
         charBuffer = "102"
     elseif char == "b" then

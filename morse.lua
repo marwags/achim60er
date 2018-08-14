@@ -21,8 +21,9 @@ local dit = 200; -- ms für ein dit
 local dah = dit * 3;
 
 local textfile = "morse.txt";
+local grussfile = "gruss.txt";
 local refrain  = "refrain.txt";
-local alter = 0;
+local alter = 2;
 local charBuffer = "";
 
 morse.init = function( buf, first, brightness_g, brightness_r, brightness_b, dit_length ) 
@@ -81,10 +82,12 @@ morse.xyz = function()
     tmr.create():alarm( 10000, tmr.ALARM_SINGLE, function()
         buffer:set(sld, 0, 0, 0)
         ws2812.write(buffer)
-        alter = (alter + 1) % 2
+        alter = (alter + 1) % 4
         if alter == 0 then
             text=file.open( textfile, "r");
             morse.shot("red")
+        elseif alter == 2 then
+            text=file.open( grussfile, "r");
         else
             text=file.open( refrain, "r");
         end
@@ -129,6 +132,7 @@ morse.abc = function()
     local char = text:read(1);
     if char == nil then
         text:close();
+        print("-----------")
         if alter == 0 then
             morse.shot("green")
         end
@@ -137,6 +141,7 @@ morse.abc = function()
         tmr.create():alarm( 1000, tmr.ALARM_SINGLE, morse.xyz);
         return;
     end
+    print(char)
     charBuffer = coder.encode( char )
     tmr.create():alarm( dit, tmr.ALARM_SINGLE, morse.singleChar)
 end
@@ -156,6 +161,13 @@ morse.start = function()
     ws2812.write(buffer)
 
     tmr.create():alarm( 300, tmr.ALARM_SINGLE, morse.xyz);
+end
+
+morse.setDit = function( ditLength )
+    if ditLength > 0 then
+        dit = ditLength
+        dah = dit * 3
+    end
 end
 
 return morse

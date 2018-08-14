@@ -2,6 +2,7 @@ require("morse")
 
 textfile = "morse.txt";
 originalfile = "original.txt";
+wsdit = 0;
 
 wifi.setmode(wifi.STATION)
 --wifi.sta.config("Achim","60.Geburtstag")
@@ -21,6 +22,12 @@ srv:listen(80, function(conn)
       for k, v in string.gmatch(vars, "(%w+)=([%w%+%d%%_]+)&*") do
         _GET[k] = v
       end
+    end
+    local lDit = tonumber(_GET.dit)
+    if lDit ~= nil and lDit > 0 then
+        print(lDit)
+        morse.setDit( lDit )
+        wsdit = lDit
     end
     if _GET.mtext == nil then
         _GET.mtext = ""
@@ -45,7 +52,9 @@ srv:listen(80, function(conn)
         end
     end
     buf = buf .. "<!DOCTYPE html><html><body><h1>Gl&uuml;ckwunsch zum 60., Achim.</h1><form src=\"/\"> "
-    buf = buf .. "<label for=\"mtext\">Morsetext: <input id=\"mtext\" name=\"mtext\" value=\"" .. mtext .. "\" size=\"100\"> </label><p/><input type=\"submit\" value=\"senden\"></form></body></html>"
+    buf = buf .. "<label for=\"mtext\">Morsetext: <input id=\"mtext\" name=\"mtext\" value=\"" .. mtext .. "\" size=\"100\"> </label><p/>"
+    buf = buf .. "<label for=\"dit\">dit-L&auml;nge: <input id=\"dit\" name=\"dit\" value=\"" .. wsdit .. "\" size=\"5\">"
+    buf = buf .. " </label><p/><input type=\"submit\" value=\"senden\"></form></body></html>"
     client:send(buf)
 
     mf = file.open( textfile, "w+")
@@ -80,10 +89,18 @@ feuertonne = 1;
 ersteLaterne = 2;
 hauslicht = 7;
 
-i, j, m, buffer = 0, 0, 0, ws2812.newBuffer(10, 3);
+i, j, h, buffer = 0, 0, 0, ws2812.newBuffer(10, 3);
 buffer:fill( 0, 0, 0); 
 
-buffer:set(hauslicht, 70, 200, 10);
+tmr.create():alarm(300000, tmr.ALARM_AUTO, function()
+    h = (h + 1) % 2
+    if h==0 then
+        buffer:set(hauslicht, 0, 0, 0);
+    else
+        buffer:set(hauslicht, 70, 200, 10);
+    end
+    ws2812.write(buffer)
+end)
 
 tmr.create():alarm(150, tmr.ALARM_AUTO, function()
   i = (i + 70) % 120
