@@ -17,7 +17,7 @@ local slhk_g = 20; -- Helligkeit
 local slhk_r = 20; -- Helligkeit
 local slhk_b = 20; -- Helligkeit
 
-local dit = 200; -- ms für ein dit
+local dit = 240; -- ms für ein dit
 local dah = dit * 3;
 
 local textfile = "morse.txt";

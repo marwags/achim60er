@@ -109,6 +109,6 @@ tmr.create():alarm(150, tmr.ALARM_AUTO, function()
   ws2812.write(buffer)
 end)
 
-morse.init( buffer, ersteLaterne, 50, 50, 20, 200)
+morse.init( buffer, ersteLaterne, 50, 50, 20, 240)
 morse.start()
 
